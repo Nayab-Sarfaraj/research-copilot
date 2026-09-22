@@ -15,6 +15,7 @@ export default function Home() {
   const [researches, setResearches] = useState<ResearchItem[]>(MOCK_RESEARCHES);
   const [selectedId, setSelectedId] = useState<number | null>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const selectedItem = researches.find((r) => r.id === selectedId) || null;
 
@@ -136,7 +137,11 @@ export default function Home() {
     <div className="flex h-screen w-full flex-col bg-background text-foreground overflow-hidden font-sans">
       {/* Top Header */}
       <AppHeader
-        onNewResearch={() => setSelectedId(null)}
+        onNewResearch={() => {
+          setSelectedId(null);
+          setIsMobileSidebarOpen(false);
+        }}
+        onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
         totalResearches={researches.length}
       />
 
@@ -146,25 +151,30 @@ export default function Home() {
         <AppSidebar
           researches={researches}
           selectedId={selectedId}
-          onSelect={(id) => setSelectedId(id)}
+          onSelect={(id) => {
+            setSelectedId(id);
+            setIsMobileSidebarOpen(false);
+          }}
           onDelete={handleDeleteResearch}
+          isOpenMobile={isMobileSidebarOpen}
+          onCloseMobile={() => setIsMobileSidebarOpen(false)}
         />
 
         {/* Content Area with smooth native scrolling */}
         <main className="flex flex-1 min-h-0 min-w-0 flex-col bg-background overflow-hidden">
           <div className="flex-1 min-h-0 overflow-y-auto">
-            <div className="mx-auto flex w-full max-w-3xl flex-col p-6 sm:p-10 lg:p-12">
+            <div className="mx-auto flex w-full max-w-3xl flex-col px-4 py-5 sm:px-8 sm:py-8 lg:p-12">
               {/* Mobile Back button */}
               {selectedItem && (
-                <div className="mb-4 flex items-center justify-between border-b pb-3 md:hidden">
+                <div className="mb-4 flex items-center justify-between border-b border-border/70 pb-3 md:hidden">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setSelectedId(null)}
-                    className="gap-1.5 text-xs text-muted-foreground"
+                    className="gap-1.5 text-xs text-muted-foreground hover:text-foreground -ml-2"
                   >
-                    <ArrowLeft className="h-4 w-4" />
-                    <span>New Query</span>
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <span>New Inquiry</span>
                   </Button>
                 </div>
               )}

@@ -127,38 +127,40 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
         </p>
       </section>
 
-      {/* Tabs Navigation */}
+      {/* Tabs Navigation with mobile horizontal scroll */}
       <Tabs defaultValue="report" className="w-full">
-        <TabsList className="mb-6 flex w-full max-w-md justify-start border-b rounded-none bg-transparent p-0 h-9 gap-4">
-          <TabsTrigger
-            value="report"
-            className="gap-1.5 text-xs cursor-pointer rounded-none border-b-2 border-transparent px-2 pb-2 pt-1 data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:shadow-none"
-          >
-            <FileText className="h-3.5 w-3.5" />
-            <span>Dossier</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="takeaways"
-            className="gap-1.5 text-xs cursor-pointer rounded-none border-b-2 border-transparent px-2 pb-2 pt-1 data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:shadow-none"
-          >
-            <ListChecks className="h-3.5 w-3.5" />
-            <span>Key Takeaways</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="sources"
-            className="gap-1.5 text-xs cursor-pointer rounded-none border-b-2 border-transparent px-2 pb-2 pt-1 data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:shadow-none"
-          >
-            <Globe className="h-3.5 w-3.5" />
-            <span>Evidence ({report.sources?.length || 0})</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="trace"
-            className="gap-1.5 text-xs cursor-pointer rounded-none border-b-2 border-transparent px-2 pb-2 pt-1 data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:shadow-none"
-          >
-            <GitBranch className="h-3.5 w-3.5" />
-            <span>Agent Execution</span>
-          </TabsTrigger>
-        </TabsList>
+        <div className="mb-6 w-full overflow-x-auto border-b border-border/70 pb-px [scrollbar-width:none] [-ms-overflow-style:none]">
+          <TabsList className="flex w-max min-w-full justify-start rounded-none bg-transparent p-0 h-9 gap-3 sm:gap-6 border-none">
+            <TabsTrigger
+              value="report"
+              className="shrink-0 gap-1.5 text-xs cursor-pointer rounded-none border-b-2 border-transparent px-2 pb-2 pt-1 data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:shadow-none"
+            >
+              <FileText className="h-3.5 w-3.5" />
+              <span>Dossier</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="takeaways"
+              className="shrink-0 gap-1.5 text-xs cursor-pointer rounded-none border-b-2 border-transparent px-2 pb-2 pt-1 data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:shadow-none"
+            >
+              <ListChecks className="h-3.5 w-3.5" />
+              <span>Key Takeaways</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="sources"
+              className="shrink-0 gap-1.5 text-xs cursor-pointer rounded-none border-b-2 border-transparent px-2 pb-2 pt-1 data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:shadow-none"
+            >
+              <Globe className="h-3.5 w-3.5" />
+              <span>Evidence ({report.sources?.length || 0})</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="trace"
+              className="shrink-0 gap-1.5 text-xs cursor-pointer rounded-none border-b-2 border-transparent px-2 pb-2 pt-1 data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:shadow-none"
+            >
+              <GitBranch className="h-3.5 w-3.5" />
+              <span>Agent Execution</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Tab 1: Full Report Content */}
         <TabsContent value="report" className="mt-0">
@@ -249,8 +251,8 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
                 );
 
                 return (
-                  <div key={idx} className="my-6 overflow-x-auto rounded-lg border border-border/70">
-                    <table className="w-full border-collapse text-xs">
+                  <div key={idx} className="my-6 overflow-x-auto rounded-lg border border-border/70 [scrollbar-width:thin]">
+                    <table className="w-full min-w-[480px] border-collapse text-xs">
                       <thead>
                         <tr className="border-b border-border/70 bg-muted/40 text-left font-mono font-medium text-foreground">
                           {headerRow.map((h, hIdx) => (
