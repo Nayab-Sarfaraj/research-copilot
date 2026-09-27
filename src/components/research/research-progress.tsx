@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { AgentStep, ResearchItem } from "@/types/research";
 import { Check, Loader2, AlertCircle, Terminal } from "lucide-react";

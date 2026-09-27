@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ResearchItem, ResearchStatus } from "@/types/research";
 import { Loader2, Trash2 } from "lucide-react";

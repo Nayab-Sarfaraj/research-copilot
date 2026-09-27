@@ -1,4 +1,4 @@
-export type ResearchStatus = "queued" | "processing" | "completed" | "failed";
+﻿export type ResearchStatus = "queued" | "processing" | "completed" | "failed";
 
 export type AgentPhase = "planning" | "researching" | "writing" | "completed";
 

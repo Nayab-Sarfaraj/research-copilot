@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ResearchSource } from "@/types/research";
 import { ExternalLink, Globe } from "lucide-react";
