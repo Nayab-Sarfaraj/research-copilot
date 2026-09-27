@@ -1,11 +1,11 @@
-﻿"use client";
+"use client";
 
-import { ResearchItem, ResearchStatus } from "@/types/research";
+import { ResearchItem, ResearchResponse, ResearchStatus } from "@/types/research";
 import { Loader2, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ResearchCardProps {
-  item: ResearchItem;
+  item: ResearchItem | ResearchResponse;
   isSelected: boolean;
   onSelect: (id: number) => void;
   onDelete: (id: number, e: React.MouseEvent) => void;
@@ -27,6 +27,9 @@ export function ResearchCard({
           </span>
         );
       case "processing":
+      case "planning":
+      case "researching":
+      case "writing":
         return (
           <span className="flex items-center gap-1.5 text-[11px] text-amber-600 font-mono">
             <Loader2 className="h-3 w-3 animate-spin text-amber-500" />
@@ -34,6 +37,7 @@ export function ResearchCard({
           </span>
         );
       case "queued":
+      case "created":
         return (
           <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-mono">
             <span className="h-1.5 w-1.5 rounded-full bg-border" />
@@ -50,10 +54,13 @@ export function ResearchCard({
     }
   };
 
-  const formattedDate = new Date(item.createdAt).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-  });
+  const rawDate = item.created_at || item.createdAt;
+  const formattedDate = rawDate
+    ? new Date(rawDate).toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+      })
+    : "Recent";
 
   return (
     <div

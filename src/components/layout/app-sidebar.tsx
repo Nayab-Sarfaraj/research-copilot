@@ -1,18 +1,19 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
-import { ResearchItem } from "@/types/research";
+import { ResearchItem, ResearchResponse } from "@/types/research";
 import { ResearchCard } from "@/components/research/research-card";
-import { Search, X } from "lucide-react";
+import { Search, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface AppSidebarProps {
-  researches: ResearchItem[];
+export interface AppSidebarProps {
+  researches: (ResearchItem | ResearchResponse)[];
   selectedId: number | null;
   onSelect: (id: number) => void;
   onDelete: (id: number, e: React.MouseEvent) => void;
   isOpenMobile?: boolean;
   onCloseMobile?: () => void;
+  isLoading?: boolean;
 }
 
 export function AppSidebar({
@@ -22,6 +23,7 @@ export function AppSidebar({
   onDelete,
   isOpenMobile = false,
   onCloseMobile,
+  isLoading = false,
 }: AppSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "completed" | "active">("all");
@@ -111,7 +113,12 @@ export function AppSidebar({
 
       {/* Native smooth scroll container */}
       <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-2">
-        {filteredItems.length === 0 ? (
+        {isLoading && researches.length === 0 ? (
+          <div className="flex flex-col items-center justify-center p-8 text-center text-xs text-muted-foreground gap-2">
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            <p className="text-[11px]">Loading dossiers...</p>
+          </div>
+        ) : filteredItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8 text-center text-xs text-muted-foreground">
             <p className="font-medium text-foreground">No matches found</p>
             <p className="mt-1 text-[11px]">

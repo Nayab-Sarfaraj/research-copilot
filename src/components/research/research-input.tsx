@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowUp, CornerDownLeft } from "lucide-react";
+import { ArrowUp, CornerDownLeft, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ResearchInputProps {
   onSubmit: (query: string) => void;
   isLoading?: boolean;
+  error?: string | null;
 }
 
 const STARTER_PROMPTS = [
@@ -32,7 +33,7 @@ const STARTER_PROMPTS = [
   },
 ];
 
-export function ResearchInput({ onSubmit, isLoading }: ResearchInputProps) {
+export function ResearchInput({ onSubmit, isLoading, error }: ResearchInputProps) {
   const [query, setQuery] = useState("");
 
   const handleSubmit = (e?: React.FormEvent) => {
@@ -51,6 +52,13 @@ export function ResearchInput({ onSubmit, isLoading }: ResearchInputProps) {
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">
+      {error && (
+        <div className="flex items-start gap-2.5 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+          <span>{error}</span>
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="relative flex flex-col rounded-xl border border-border bg-card p-4 shadow-sm transition-all focus-within:border-foreground/40 focus-within:ring-2 focus-within:ring-foreground/5"

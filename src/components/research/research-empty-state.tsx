@@ -1,13 +1,14 @@
-"use client";
+﻿"use client";
 
 import { ResearchInput } from "@/components/research/research-input";
 
-interface ResearchEmptyStateProps {
+export interface ResearchEmptyStateProps {
   onSubmit: (query: string) => void;
   isLoading?: boolean;
+  error?: string | null;
 }
 
-export function ResearchEmptyState({ onSubmit, isLoading }: ResearchEmptyStateProps) {
+export function ResearchEmptyState({ onSubmit, isLoading, error }: ResearchEmptyStateProps) {
   return (
     <div className="flex w-full flex-col items-center justify-center py-8 sm:py-16">
       <div className="flex flex-col items-center text-center max-w-xl mb-10">
@@ -22,8 +23,7 @@ export function ResearchEmptyState({ onSubmit, isLoading }: ResearchEmptyStatePr
         </p>
       </div>
 
-      {/* Main Query Input Card */}
-      <ResearchInput onSubmit={onSubmit} isLoading={isLoading} />
+      <ResearchInput onSubmit={onSubmit} isLoading={isLoading} error={error} />
     </div>
   );
 }

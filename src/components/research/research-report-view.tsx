@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { ResearchItem } from "@/types/research";
@@ -42,11 +42,14 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const formattedDate = new Date(report.createdAt).toLocaleDateString(undefined, {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const rawDate = report.created_at || report.createdAt;
+  const formattedDate = rawDate
+    ? new Date(rawDate).toLocaleDateString(undefined, {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "Recently generated";
 
   return (
     <article className="flex w-full flex-col gap-8 pb-16">
