@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Compass, Plus, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -14,6 +15,8 @@ export function AppHeader({
   onToggleMobileSidebar,
   totalResearches,
 }: AppHeaderProps) {
+  const router = useRouter();
+
   return (
     <header className="sticky top-0 z-30 flex h-14 w-full shrink-0 items-center justify-between border-b border-border/70 bg-background/90 px-3 sm:px-6 backdrop-blur-md">
       <div className="flex items-center gap-2.5 sm:gap-3">
@@ -29,14 +32,23 @@ export function AppHeader({
           <PanelLeft className="h-4 w-4" />
         </Button>
 
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-foreground text-background shadow-xs shrink-0">
+        <button
+          type="button"
+          onClick={() => router.push("/")}
+          aria-label="Go to home page"
+          className="flex h-8 w-8 items-center justify-center rounded-md bg-foreground text-background shadow-xs shrink-0 transition-opacity hover:opacity-90 cursor-pointer"
+        >
           <Compass className="h-4 w-4 stroke-[2.2]" />
-        </div>
+        </button>
 
         <div className="flex items-center gap-2">
-          <span className="font-serif text-base sm:text-lg font-semibold tracking-tight text-foreground truncate">
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="font-serif text-base sm:text-lg font-semibold tracking-tight text-foreground truncate cursor-pointer hover:text-foreground/80"
+          >
             Research Copilot
-          </span>
+          </button>
           <span className="hidden sm:inline text-border">/</span>
           <span className="hidden sm:inline text-xs text-muted-foreground font-sans">
             Technical Intelligence

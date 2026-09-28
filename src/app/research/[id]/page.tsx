@@ -115,6 +115,18 @@ export default function ResearchDetailPage({ params }: ResearchPageProps) {
         <main className="flex flex-1 min-h-0 min-w-0 flex-col bg-background overflow-hidden">
           <div className="flex-1 min-h-0 overflow-y-auto">
             <div className="mx-auto flex w-full max-w-3xl flex-col px-4 py-5 sm:px-8 sm:py-8 lg:p-12">
+              <div className="mb-4 flex items-center justify-between border-b border-border/70 pb-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => router.push("/")}
+                  className="gap-1.5 text-xs text-muted-foreground hover:text-foreground -ml-2 cursor-pointer"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  <span>Back to Home</span>
+                </Button>
+              </div>
+
               {/* Back to New Inquiry bar on mobile */}
               <div className="mb-4 flex items-center justify-between border-b border-border/70 pb-3 md:hidden">
                 <Button
@@ -132,7 +144,9 @@ export default function ResearchDetailPage({ params }: ResearchPageProps) {
               {isResearchLoading ? (
                 <div className="flex flex-col items-center justify-center p-16 text-center text-muted-foreground gap-3">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  <span className="text-xs font-mono">Loading research dossier #{researchId}...</span>
+                  <span className="text-xs font-mono">
+                    Loading research dossier #{researchId}...
+                  </span>
                 </div>
               ) : researchError ? (
                 /* 13.8: Error State (404, 403, Network Error) */
@@ -170,7 +184,9 @@ export default function ResearchDetailPage({ params }: ResearchPageProps) {
                 /* Empty / Not Found */
                 <div className="flex flex-col items-center justify-center p-16 text-center text-muted-foreground gap-3">
                   <FileQuestion className="h-10 w-10 opacity-30" />
-                  <p className="text-sm font-medium">Research dossier not found.</p>
+                  <p className="text-sm font-medium">
+                    Research dossier not found.
+                  </p>
                   <Button
                     variant="outline"
                     size="sm"
@@ -182,11 +198,34 @@ export default function ResearchDetailPage({ params }: ResearchPageProps) {
                 </div>
               ) : research.status === "completed" && research.report ? (
                 /* 13.4: Completed Report View */
-                <ResearchReportView item={research} />
+                <>
+                  <div className="mb-4 flex items-center justify-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => router.push("/")}
+                      className="h-8 gap-1.5 text-xs font-medium cursor-pointer shadow-2xs"
+                    >
+                      <ArrowLeft className="h-3.5 w-3.5" />
+                      <span>Back to Home</span>
+                    </Button>
+                  </div>
+                  <ResearchReportView item={research} />
+                </>
               ) : (
                 /* 13.3: Active Progress & Failed View */
                 <div className="flex flex-col gap-6">
                   <div className="flex items-center justify-between">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => router.push("/")}
+                      className="h-8 gap-1.5 text-xs font-medium cursor-pointer shadow-2xs"
+                    >
+                      <ArrowLeft className="h-3.5 w-3.5" />
+                      <span>Back to Home</span>
+                    </Button>
+
                     <Button
                       variant="outline"
                       size="sm"

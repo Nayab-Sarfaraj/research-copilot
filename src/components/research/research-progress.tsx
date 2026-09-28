@@ -1,52 +1,81 @@
 ﻿"use client";
 
 import { AgentStep, ResearchItem } from "@/types/research";
-import { Check, Loader2, AlertCircle, Terminal } from "lucide-react";
+import { Check, Loader2, AlertCircle, Terminal, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ResearchProgressProps {
   item: ResearchItem;
 }
 
-const DEFAULT_STEPS: AgentStep[] = [
-  {
-    id: "step-1",
-    phase: "planning",
-    label: "Decompose Research Vectors",
-    description: "Planner agent analyzes inquiry, extracts evaluation metrics, and forms research execution plan.",
-    status: "in-progress",
-  },
-  {
-    id: "step-2",
-    phase: "researching",
-    label: "Deep Technical Literature & Web Ingestion",
-    description: "Queries external technical sources, verifies benchmark methodologies, and extracts findings.",
-    status: "pending",
-  },
-  {
-    id: "step-3",
-    phase: "writing",
-    label: "Editorial Dossier Synthesis",
-    description: "Compiles structured executive summary, comparative tables, and decision framework.",
-    status: "pending",
-  },
-];
+function getPhaseLabel(phase: string | undefined) {
+  const normalized = (phase || "queued").toLowerCase();
+  const map: Record<string, string> = {
+    queued: "Queued",
+    planning: "Planning",
+    researching: "Researching",
+    writing: "Writing",
+    completed: "Completed",
+    failed: "Failed",
+    processing: "Processing",
+    created: "Created",
+  };
+
+  return map[normalized] || "Queued";
+}
 
 export function ResearchProgress({ item }: ResearchProgressProps) {
-  const steps = item.steps && item.steps.length > 0 ? item.steps : DEFAULT_STEPS;
+  const currentPhase = item.currentPhase || item.status;
+  const steps =
+    item.steps && item.steps.length > 0
+      ? item.steps
+      : [
+          {
+            id: "current-phase",
+            phase: currentPhase as string,
+            label: getPhaseLabel(currentPhase),
+            description:
+              item.status === "completed"
+                ? "The research dossier has been generated and is ready to review."
+                : item.status === "failed"
+                  ? "The workflow stopped while processing this research request."
+                  : "The backend is processing this research task and will publish the final output when complete.",
+            status:
+              item.status === "completed"
+                ? "completed"
+                : item.status === "failed"
+                  ? "failed"
+                  : "in-progress",
+          } as AgentStep,
+        ];
+
+  const phaseLabel = getPhaseLabel(currentPhase);
 
   return (
     <div className="flex w-full flex-col gap-6 rounded-xl border border-border/80 bg-card p-6 shadow-2xs">
-      <div className="flex flex-col gap-2 border-b border-border/70 pb-5">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 border-b border-border/70 pb-5">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+            <span
+              className={cn(
+                "h-2.5 w-2.5 rounded-full animate-pulse",
+                item.status === "completed"
+                  ? "bg-emerald-500"
+                  : item.status === "failed"
+                    ? "bg-red-500"
+                    : "bg-amber-500",
+              )}
+            />
             <h3 className="font-serif text-lg font-medium text-foreground">
-              Research Synthesis in Progress
+              {item.status === "completed"
+                ? "Research Synthesis Complete"
+                : item.status === "failed"
+                  ? "Research Synthesis Failed"
+                  : "Research Synthesis in Progress"}
             </h3>
           </div>
-          <span className="font-mono text-xs uppercase text-muted-foreground">
-            Phase: {item.currentPhase || item.status}
+          <span className="rounded-full border border-border/80 bg-muted/40 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            {phaseLabel}
           </span>
         </div>
 
@@ -69,46 +98,47 @@ export function ResearchProgress({ item }: ResearchProgressProps) {
       <div className="relative flex flex-col gap-6 pl-2">
         <div className="absolute left-[17px] top-3 bottom-3 w-px bg-border/80" />
 
-        {steps.map((step, idx) => {
-          const isCurrent = step.status === "in-progress";
+        {steps.map((step) => {
+          const isCurrent =
+            step.status === "in-progress" || step.status === "pending";
           const isDone = step.status === "completed";
           const isFailed = step.status === "failed";
 
           return (
             <div key={step.id} className="relative flex items-start gap-4 z-10">
-              {/* Step indicator node */}
               <div
                 className={cn(
                   "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border bg-background text-xs font-mono transition-colors",
                   isDone
                     ? "border-emerald-500 bg-emerald-500 text-white"
                     : isCurrent
-                    ? "border-foreground bg-foreground text-background shadow-xs"
-                    : isFailed
-                    ? "border-destructive bg-destructive text-white"
-                    : "border-border text-muted-foreground"
+                      ? "border-foreground bg-foreground text-background shadow-xs"
+                      : isFailed
+                        ? "border-destructive bg-destructive text-white"
+                        : "border-border text-muted-foreground",
                 )}
               >
                 {isDone ? (
                   <Check className="h-3.5 w-3.5 stroke-[2.5]" />
                 ) : isCurrent ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : isFailed ? (
+                  <AlertCircle className="h-3.5 w-3.5 stroke-[2.5]" />
                 ) : (
-                  <span>0{idx + 1}</span>
+                  <Circle className="h-2.5 w-2.5 fill-current" />
                 )}
               </div>
 
-              {/* Step content */}
-              <div className="flex flex-1 flex-col gap-1 pt-0.5">
-                <div className="flex items-center justify-between">
+              <div className="flex flex-1 flex-col gap-1.5 pt-0.5">
+                <div className="flex items-center justify-between gap-3">
                   <span
                     className={cn(
-                      "text-xs font-semibold",
+                      "text-xs font-semibold tracking-wide",
                       isCurrent
                         ? "text-foreground"
                         : isDone
-                        ? "text-foreground/90"
-                        : "text-muted-foreground"
+                          ? "text-foreground/90"
+                          : "text-muted-foreground",
                     )}
                   >
                     {step.label}
@@ -120,15 +150,17 @@ export function ResearchProgress({ item }: ResearchProgressProps) {
                   )}
                 </div>
 
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-xs leading-relaxed text-muted-foreground">
                   {step.description}
                 </p>
 
                 {step.details && step.details.length > 0 && (
-                  <div className="mt-2 flex flex-col gap-1 rounded border border-border/70 bg-muted/40 p-2.5 font-mono text-[11px] text-muted-foreground">
-                    <div className="flex items-center gap-1.5 text-foreground/80 mb-0.5">
+                  <div className="mt-2 flex flex-col gap-1.5 rounded-md border border-border/70 bg-muted/30 p-2.5 font-mono text-[11px] text-muted-foreground">
+                    <div className="mb-0.5 flex items-center gap-1.5 text-foreground/80">
                       <Terminal className="h-3 w-3" />
-                      <span className="font-semibold text-[10px] tracking-wider">EXECUTION TRACE</span>
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.18em]">
+                        Execution Trace
+                      </span>
                     </div>
                     {step.details.map((detail, dIdx) => (
                       <div key={dIdx} className="flex items-start gap-1.5">

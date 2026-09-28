@@ -11,7 +11,6 @@ import {
   Check,
   Share2,
   FileText,
-  ListChecks,
   Globe,
   GitBranch,
   Clock,
@@ -25,12 +24,18 @@ interface ResearchReportViewProps {
 export function ResearchReportView({ item }: ResearchReportViewProps) {
   const [copied, setCopied] = useState(false);
   const report = item.report;
+  const sources =
+    item.sources && item.sources.length > 0
+      ? item.sources
+      : (report?.sources ?? []);
 
   if (!report) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground">
         <FileText className="h-10 w-10 mb-2 opacity-30" />
-        <p className="text-sm font-medium">No report generated for this research.</p>
+        <p className="text-sm font-medium">
+          No report generated for this research.
+        </p>
       </div>
     );
   }
@@ -63,8 +68,7 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
             </span>
             <span>·</span>
             <span className="flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5" />
-              5 min read
+              <Clock className="h-3.5 w-3.5" />5 min read
             </span>
             <span>·</span>
             <span className="text-emerald-600 dark:text-emerald-400 font-medium">
@@ -142,18 +146,11 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
               <span>Dossier</span>
             </TabsTrigger>
             <TabsTrigger
-              value="takeaways"
-              className="shrink-0 gap-1.5 text-xs cursor-pointer rounded-none border-b-2 border-transparent px-2 pb-2 pt-1 data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:shadow-none"
-            >
-              <ListChecks className="h-3.5 w-3.5" />
-              <span>Key Takeaways</span>
-            </TabsTrigger>
-            <TabsTrigger
               value="sources"
               className="shrink-0 gap-1.5 text-xs cursor-pointer rounded-none border-b-2 border-transparent px-2 pb-2 pt-1 data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:shadow-none"
             >
               <Globe className="h-3.5 w-3.5" />
-              <span>Evidence ({report.sources?.length || 0})</span>
+              <span>Evidence ({sources.length})</span>
             </TabsTrigger>
             <TabsTrigger
               value="trace"
@@ -197,19 +194,24 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
               }
               // Bullet lists
               if (block.startsWith("- ")) {
-                const items = block.split("\n").filter((l) => l.startsWith("- "));
+                const items = block
+                  .split("\n")
+                  .filter((l) => l.startsWith("- "));
                 return (
                   <ul key={idx} className="space-y-2.5 pl-4">
                     {items.map((it, iIdx) => {
                       const line = it.replace("- ", "");
                       return (
-                        <li key={iIdx} className="relative pl-3 text-foreground/90">
+                        <li
+                          key={iIdx}
+                          className="relative pl-3 text-foreground/90"
+                        >
                           <span className="absolute -left-1 top-2.5 h-1 w-1 rounded-full bg-foreground/40" />
                           <span
                             dangerouslySetInnerHTML={{
                               __html: line.replace(
                                 /\*\*(.*?)\*\*/g,
-                                '<strong class="font-semibold text-foreground">$1</strong>'
+                                '<strong class="font-semibold text-foreground">$1</strong>',
                               ),
                             }}
                           />
@@ -230,7 +232,7 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
                           dangerouslySetInnerHTML={{
                             __html: line.replace(
                               /\*\*(.*?)\*\*/g,
-                              '<strong class="font-semibold text-foreground">$1</strong>'
+                              '<strong class="font-semibold text-foreground">$1</strong>',
                             ),
                           }}
                         />
@@ -250,16 +252,22 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
                   r
                     .split("|")
                     .filter((c) => c.trim().length > 0)
-                    .map((c) => c.trim())
+                    .map((c) => c.trim()),
                 );
 
                 return (
-                  <div key={idx} className="my-6 overflow-x-auto rounded-lg border border-border/70 [scrollbar-width:thin]">
+                  <div
+                    key={idx}
+                    className="my-6 overflow-x-auto rounded-lg border border-border/70 [scrollbar-width:thin]"
+                  >
                     <table className="w-full min-w-[480px] border-collapse text-xs">
                       <thead>
                         <tr className="border-b border-border/70 bg-muted/40 text-left font-mono font-medium text-foreground">
                           {headerRow.map((h, hIdx) => (
-                            <th key={hIdx} className="p-3 uppercase tracking-wider text-[11px]">
+                            <th
+                              key={hIdx}
+                              className="p-3 uppercase tracking-wider text-[11px]"
+                            >
                               {h}
                             </th>
                           ))}
@@ -267,9 +275,15 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
                       </thead>
                       <tbody className="divide-y divide-border/60">
                         {dataRows.map((row, rIdx) => (
-                          <tr key={rIdx} className="hover:bg-muted/20 transition-colors">
+                          <tr
+                            key={rIdx}
+                            className="hover:bg-muted/20 transition-colors"
+                          >
                             {row.map((cell, cIdx) => (
-                              <td key={cIdx} className="p-3 text-foreground/80 leading-normal">
+                              <td
+                                key={cIdx}
+                                className="p-3 text-foreground/80 leading-normal"
+                              >
                                 {cell}
                               </td>
                             ))}
@@ -288,7 +302,7 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
                     dangerouslySetInnerHTML={{
                       __html: block.replace(
                         /\*\*(.*?)\*\*/g,
-                        '<strong class="font-semibold text-foreground">$1</strong>'
+                        '<strong class="font-semibold text-foreground">$1</strong>',
                       ),
                     }}
                   />
@@ -298,35 +312,9 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
           </div>
         </TabsContent>
 
-        {/* Tab 2: Key Takeaways */}
-        <TabsContent value="takeaways" className="mt-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {report.keyTakeaways?.map((takeaway, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-3.5 rounded-lg border border-border/70 bg-card p-4 shadow-2xs"
-              >
-                <span className="font-mono text-xs text-muted-foreground shrink-0 mt-0.5 font-semibold">
-                  0{idx + 1}
-                </span>
-                <div className="text-xs text-foreground/90 leading-relaxed">
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: takeaway.replace(
-                        /\*\*(.*?)\*\*/g,
-                        '<strong class="text-foreground font-semibold">$1</strong>'
-                      ),
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </TabsContent>
-
-        {/* Tab 3: Sources */}
+        {/* Tab 2: Sources */}
         <TabsContent value="sources" className="mt-0">
-          <ResearchSources sources={report.sources} />
+          <ResearchSources sources={sources} />
         </TabsContent>
 
         {/* Tab 4: Agent Trace */}
