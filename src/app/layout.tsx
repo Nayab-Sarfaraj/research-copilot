@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Newsreader, JetBrains_Mono } from "next/font/google";
+import {
+  Plus_Jakarta_Sans,
+  Newsreader,
+  JetBrains_Mono,
+} from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { AuthProvider } from "@/contexts/auth-context";
 
 const sans = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -38,9 +43,10 @@ export default function RootLayout({
       className={`${sans.variable} ${serif.variable} ${mono.variable} h-full antialiased font-sans`}
     >
       <body className="min-h-full flex flex-col font-sans bg-background text-foreground selection:bg-foreground selection:text-background">
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );
 }
-
