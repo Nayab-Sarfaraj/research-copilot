@@ -1,8 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Compass, Plus, PanelLeft } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Compass, LogOut, Plus, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/auth-context";
 
 interface AppHeaderProps {
   onNewResearch: () => void;
@@ -16,6 +18,14 @@ export function AppHeader({
   totalResearches,
 }: AppHeaderProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    queryClient.clear();
+    router.replace("/");
+  };
 
   return (
     <header className="sticky top-0 z-30 flex h-14 w-full shrink-0 items-center justify-between border-b border-border/70 bg-background/90 px-3 sm:px-6 backdrop-blur-md">
@@ -71,6 +81,20 @@ export function AppHeader({
           <span className="hidden xs:inline sm:inline">New Query</span>
           <span className="inline xs:hidden sm:hidden">New</span>
         </Button>
+
+        {isAuthenticated && (
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            size="sm"
+            className="h-8 gap-1.5 px-2.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+            title="Sign out"
+            aria-label="Sign out"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Sign out</span>
+          </Button>
+        )}
       </div>
     </header>
   );

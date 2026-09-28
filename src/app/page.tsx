@@ -10,6 +10,7 @@ import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { ResearchEmptyState } from "@/components/research/research-empty-state";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   Compass,
   ArrowRight,
@@ -28,10 +29,17 @@ import {
 export default function Home() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, isAuthenticated, isLoading: isAuthLoading, openAuthModal, logout } = useAuth();
+  const {
+    user,
+    isAuthenticated,
+    isLoading: isAuthLoading,
+    openAuthModal,
+    logout,
+  } = useAuth();
 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [researchToDelete, setResearchToDelete] = useState<number | null>(null);
 
   // 13.7: Fetch REAL research history from backend GET /research
   const { data: historyData, isLoading: isHistoryLoading } = useQuery({
@@ -72,9 +80,7 @@ export default function Home() {
 
   const handleDeleteResearch = (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm("Are you sure you want to delete this research dossier?")) {
-      deleteMutation.mutate(id);
-    }
+    setResearchToDelete(id);
   };
 
   const researches = historyData?.items || [];
@@ -119,6 +125,20 @@ export default function Home() {
             </div>
           </main>
         </div>
+        <ConfirmDialog
+          open={researchToDelete !== null}
+          onOpenChange={(open) => {
+            if (!open) setResearchToDelete(null);
+          }}
+          title="Delete research dossier?"
+          description="This will permanently delete this research dossier and its report. This action cannot be undone."
+          confirmLabel="Delete dossier"
+          onConfirm={() => {
+            if (researchToDelete !== null) {
+              deleteMutation.mutate(researchToDelete);
+            }
+          }}
+        />
       </div>
     );
   }
@@ -152,7 +172,10 @@ export default function Home() {
             Sign In
           </Link>
           <Link href="/signup">
-            <Button size="sm" className="h-8 gap-1.5 rounded-lg px-3.5 text-xs font-medium cursor-pointer shadow-xs">
+            <Button
+              size="sm"
+              className="h-8 gap-1.5 rounded-lg px-3.5 text-xs font-medium cursor-pointer shadow-xs"
+            >
               <span>Get Started</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
@@ -175,19 +198,29 @@ export default function Home() {
         </h1>
 
         <p className="mt-6 max-w-2xl text-sm sm:text-base text-muted-foreground leading-relaxed">
-          Queue complex engineering inquiries. Our multi-agent LangGraph pipeline deconstructs requirements, queries your private vector database, pulls live benchmarks via Tavily, and writes structured dossiers with verified citations.
+          Queue complex engineering inquiries. Our multi-agent LangGraph
+          pipeline deconstructs requirements, queries your private vector
+          database, pulls live benchmarks via Tavily, and writes structured
+          dossiers with verified citations.
         </p>
 
         {/* Call to Actions */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
           <Link href="/signup">
-            <Button size="lg" className="h-10 gap-2 rounded-xl px-5 text-xs font-medium shadow-md cursor-pointer">
+            <Button
+              size="lg"
+              className="h-10 gap-2 rounded-xl px-5 text-xs font-medium shadow-md cursor-pointer"
+            >
               <span>Start Investigating</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <Link href="/login">
-            <Button variant="outline" size="lg" className="h-10 rounded-xl px-5 text-xs font-medium shadow-2xs cursor-pointer">
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-10 rounded-xl px-5 text-xs font-medium shadow-2xs cursor-pointer"
+            >
               <span>Sign In to Dashboard</span>
             </Button>
           </Link>
@@ -214,7 +247,8 @@ export default function Home() {
               Multi-Agent Research Pipeline
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-xl">
-              Deterministic state machine powered by LangGraph, Inngest durable step execution, and PostgreSQL pgvector.
+              Deterministic state machine powered by LangGraph, Inngest durable
+              step execution, and PostgreSQL pgvector.
             </p>
           </div>
 
@@ -227,7 +261,8 @@ export default function Home() {
                 Planner Node
               </h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Deconstructs natural language queries into distinct search vectors and investigative angles.
+                Deconstructs natural language queries into distinct search
+                vectors and investigative angles.
               </p>
             </div>
 
@@ -239,7 +274,8 @@ export default function Home() {
                 Dual Retrieval
               </h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Queries local pgvector 384-dim document embeddings and Tavily advanced web search in parallel.
+                Queries local pgvector 384-dim document embeddings and Tavily
+                advanced web search in parallel.
               </p>
             </div>
 
@@ -251,7 +287,8 @@ export default function Home() {
                 Writer Node
               </h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Groq qwen-27b synthesizes findings into an executive summary, markdown content, and deduplicated citations.
+                Groq qwen-27b synthesizes findings into an executive summary,
+                markdown content, and deduplicated citations.
               </p>
             </div>
 
@@ -263,7 +300,8 @@ export default function Home() {
                 Durable Output
               </h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Reports and citations are persisted to Postgres with eager loading and live polling states.
+                Reports and citations are persisted to Postgres with eager
+                loading and live polling states.
               </p>
             </div>
           </div>
@@ -275,25 +313,34 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex flex-col gap-3 rounded-xl border border-border/70 p-6 bg-card">
             <Database className="h-5 w-5 text-foreground" />
-            <h3 className="text-sm font-semibold text-foreground">Domain Knowledge Base</h3>
+            <h3 className="text-sm font-semibold text-foreground">
+              Domain Knowledge Base
+            </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Upload PDF whitepapers, architecture specs, and RFCs. Extracted with PyMuPDF, chunked, and embedded into pgvector.
+              Upload PDF whitepapers, architecture specs, and RFCs. Extracted
+              with PyMuPDF, chunked, and embedded into pgvector.
             </p>
           </div>
 
           <div className="flex flex-col gap-3 rounded-xl border border-border/70 p-6 bg-card">
             <ShieldCheck className="h-5 w-5 text-foreground" />
-            <h3 className="text-sm font-semibold text-foreground">User Isolation & Auth</h3>
+            <h3 className="text-sm font-semibold text-foreground">
+              User Isolation & Auth
+            </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Stateless 24-hour JWT tokens with bcrypt password hashing. All research queries, reports, and PDFs are strictly scoped per user.
+              Stateless 24-hour JWT tokens with bcrypt password hashing. All
+              research queries, reports, and PDFs are strictly scoped per user.
             </p>
           </div>
 
           <div className="flex flex-col gap-3 rounded-xl border border-border/70 p-6 bg-card">
             <Zap className="h-5 w-5 text-foreground" />
-            <h3 className="text-sm font-semibold text-foreground">Sliding-Window Rate Limits</h3>
+            <h3 className="text-sm font-semibold text-foreground">
+              Sliding-Window Rate Limits
+            </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              In-memory rate limiting prevents abuse (5 research queries/minute, 10 PDF uploads/hour) with HTTP 429 Retry-After headers.
+              In-memory rate limiting prevents abuse (5 research queries/minute,
+              10 PDF uploads/hour) with HTTP 429 Retry-After headers.
             </p>
           </div>
         </div>
@@ -304,8 +351,12 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 max-w-5xl mx-auto">
           <span>Research Copilot · Autonomous Technical Intelligence</span>
           <div className="flex items-center gap-4">
-            <Link href="/login" className="hover:text-foreground">Sign In</Link>
-            <Link href="/signup" className="hover:text-foreground">Sign Up</Link>
+            <Link href="/login" className="hover:text-foreground">
+              Sign In
+            </Link>
+            <Link href="/signup" className="hover:text-foreground">
+              Sign Up
+            </Link>
           </div>
         </div>
       </footer>

@@ -9,6 +9,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { ResearchReportView } from "@/components/research/research-report-view";
 import { ResearchProgress } from "@/components/research/research-progress";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   ArrowLeft,
   RefreshCw,
@@ -29,6 +30,7 @@ export default function ResearchDetailPage({ params }: ResearchPageProps) {
   const researchId = Number(resolvedParams.id);
 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [researchToDelete, setResearchToDelete] = useState<number | null>(null);
 
   // 13.7: Fetch research history
   const { data: historyData, isLoading: isHistoryLoading } = useQuery({
@@ -78,9 +80,7 @@ export default function ResearchDetailPage({ params }: ResearchPageProps) {
 
   const handleDeleteResearch = (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm("Are you sure you want to delete this research dossier?")) {
-      deleteMutation.mutate(id);
-    }
+    setResearchToDelete(id);
   };
 
   const researches = historyData?.items || [];
@@ -259,6 +259,20 @@ export default function ResearchDetailPage({ params }: ResearchPageProps) {
           </div>
         </main>
       </div>
+      <ConfirmDialog
+        open={researchToDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setResearchToDelete(null);
+        }}
+        title="Delete research dossier?"
+        description="This will permanently delete this research dossier and its report. This action cannot be undone."
+        confirmLabel="Delete dossier"
+        onConfirm={() => {
+          if (researchToDelete !== null) {
+            deleteMutation.mutate(researchToDelete);
+          }
+        }}
+      />
     </div>
   );
 }

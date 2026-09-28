@@ -6,6 +6,7 @@ import { ResearchSources } from "@/components/research/research-sources";
 import { ResearchProgress } from "@/components/research/research-progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Dialog } from "@base-ui/react/dialog";
 import {
   Copy,
   Check,
@@ -23,6 +24,8 @@ interface ResearchReportViewProps {
 
 export function ResearchReportView({ item }: ResearchReportViewProps) {
   const [copied, setCopied] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [shareDialogMessage, setShareDialogMessage] = useState("");
   const report = item.report;
   const sources =
     item.sources && item.sources.length > 0
@@ -45,6 +48,20 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
     navigator.clipboard.writeText(fullText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareDialogMessage(
+        "A link to this research dossier has been copied to your clipboard.",
+      );
+    } catch {
+      setShareDialogMessage(
+        "Your browser could not copy the link. Copy the page URL from your address bar instead.",
+      );
+    }
+    setIsShareDialogOpen(true);
   };
 
   const rawDate = report.created_at || report.createdAt;
@@ -99,7 +116,7 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => alert("Share link copied to clipboard")}
+              onClick={handleShare}
               className="h-8 gap-1.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
             >
               <Share2 className="h-3.5 w-3.5" />
@@ -322,6 +339,30 @@ export function ResearchReportView({ item }: ResearchReportViewProps) {
           <ResearchProgress item={item} />
         </TabsContent>
       </Tabs>
+
+      <Dialog.Root open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <Dialog.Portal>
+          <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/50 backdrop-blur-[2px]" />
+          <Dialog.Viewport className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <Dialog.Popup className="w-full max-w-md rounded-lg border border-border bg-background p-6 text-foreground shadow-xl">
+              <Dialog.Title className="font-serif text-lg font-semibold">
+                Share research dossier
+              </Dialog.Title>
+              <Dialog.Description className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {shareDialogMessage}
+              </Dialog.Description>
+              <div className="mt-6 flex justify-end">
+                <Button
+                  onClick={() => setIsShareDialogOpen(false)}
+                  className="cursor-pointer"
+                >
+                  Done
+                </Button>
+              </div>
+            </Dialog.Popup>
+          </Dialog.Viewport>
+        </Dialog.Portal>
+      </Dialog.Root>
     </article>
   );
 }
