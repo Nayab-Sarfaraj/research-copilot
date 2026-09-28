@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { ResearchEmptyState } from "@/components/research/research-empty-state";
+import { DocumentUploadModal } from "@/components/documents/document-upload-modal";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
@@ -24,6 +25,7 @@ import {
   Layers,
   CheckCircle2,
   Lock,
+  Upload,
 } from "lucide-react";
 
 export default function Home() {
@@ -38,6 +40,7 @@ export default function Home() {
   } = useAuth();
 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isDocumentUploadOpen, setIsDocumentUploadOpen] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [researchToDelete, setResearchToDelete] = useState<number | null>(null);
 
@@ -116,6 +119,25 @@ export default function Home() {
           <main className="flex flex-1 min-h-0 min-w-0 flex-col bg-background overflow-hidden">
             <div className="flex-1 min-h-0 overflow-y-auto">
               <div className="mx-auto flex w-full max-w-3xl flex-col px-4 py-5 sm:px-8 sm:py-8 lg:p-12">
+                <div className="mb-6 flex items-center justify-between gap-4 border-b border-border/70 pb-4">
+                  <div className="min-w-0">
+                    <h2 className="text-sm font-semibold text-foreground">
+                      Domain Knowledge Base
+                    </h2>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Index PDF documents for research retrieval.
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsDocumentUploadOpen(true)}
+                    className="shrink-0 gap-1.5 cursor-pointer"
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                    <span>Upload PDF</span>
+                  </Button>
+                </div>
                 <ResearchEmptyState
                   onSubmit={handleCreateResearch}
                   isLoading={createMutation.isPending}
@@ -138,6 +160,10 @@ export default function Home() {
               deleteMutation.mutate(researchToDelete);
             }
           }}
+        />
+        <DocumentUploadModal
+          isOpen={isDocumentUploadOpen}
+          onClose={() => setIsDocumentUploadOpen(false)}
         />
       </div>
     );
